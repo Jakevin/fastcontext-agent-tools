@@ -1,7 +1,8 @@
 {
   "mcpServers": {
     "fastcontext": {
-      "command": "fastcontext-mcp",
+      "command": "python",
+      "args": ["-m", "fastcontext_mcp"],
       "env": {
         "BASE_URL": "https://your-endpoint.example/v1",
         "MODEL": "microsoft/FastContext-1.0-4B-SFT",
@@ -11,4 +12,3 @@
     }
   }
 }
-

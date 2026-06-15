@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="430" viewBox="0 0 980 430" role="img" aria-labelledby="title desc">
+  <title id="title">FastContext Agent Tools architecture</title>
+  <desc id="desc">A coding agent uses a Codex skill to call the FastContext MCP server, which delegates repository exploration to the upstream FastContext CLI and model endpoint.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto">
+      <path d="M0,0 L12,4 L0,8 Z" fill="#36506c"/>
+    </marker>
+  </defs>
+  <style>
+    .title { font: 700 30px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #17202a; }
+    .sub { font: 400 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #536471; }
+    .box-title { font: 700 17px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #17202a; }
+    .box-text { font: 400 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #405261; }
+    .small { font: 600 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #36506c; }
+  </style>
+  <rect width="980" height="430" fill="#f7faf8"/>
+  <text x="46" y="58" class="title">FastContext Agent Tools</text>
+  <text x="46" y="84" class="sub">Read-only repository localization for coding agents through MCP and a Codex skill.</text>
+
+  <rect x="46" y="138" width="178" height="112" rx="8" fill="#ffffff" stroke="#cbd6dc"/>
+  <text x="72" y="176" class="box-title">Coding Agent</text>
+  <text x="72" y="202" class="box-text">Receives task</text>
+  <text x="72" y="222" class="box-text">Reads cited code</text>
+
+  <rect x="286" y="138" width="178" height="112" rx="8" fill="#ffffff" stroke="#cbd6dc"/>
+  <text x="312" y="176" class="box-title">Codex Skill</text>
+  <text x="312" y="202" class="box-text">Decides when to explore</text>
+  <text x="312" y="222" class="box-text">Shapes focused queries</text>
+
+  <rect x="526" y="138" width="178" height="112" rx="8" fill="#ffffff" stroke="#cbd6dc"/>
+  <text x="552" y="176" class="box-title">MCP Server</text>
+  <text x="552" y="202" class="box-text">Exposes stdio tools</text>
+  <text x="552" y="222" class="box-text">Enforces root allowlist</text>
+
+  <rect x="766" y="138" width="168" height="112" rx="8" fill="#ffffff" stroke="#cbd6dc"/>
+  <text x="792" y="176" class="box-title">FastContext CLI</text>
+  <text x="792" y="202" class="box-text">READ / GLOB / GREP</text>
+  <text x="792" y="222" class="box-text">Final citations</text>
+
+  <rect x="526" y="300" width="178" height="68" rx="8" fill="#ecf7f1" stroke="#9fcdb3"/>
+  <text x="552" y="329" class="box-title">Repository</text>
+  <text x="552" y="352" class="box-text">Read-only file access</text>
+
+  <rect x="766" y="300" width="168" height="68" rx="8" fill="#eef4fb" stroke="#a9c5df"/>
+  <text x="792" y="329" class="box-title">Model Endpoint</text>
+  <text x="792" y="352" class="box-text">OpenAI-compatible</text>
+
+  <line x1="224" y1="194" x2="286" y2="194" stroke="#36506c" stroke-width="2.2" marker-end="url(#arrow)"/>
+  <line x1="464" y1="194" x2="526" y2="194" stroke="#36506c" stroke-width="2.2" marker-end="url(#arrow)"/>
+  <line x1="704" y1="194" x2="766" y2="194" stroke="#36506c" stroke-width="2.2" marker-end="url(#arrow)"/>
+  <line x1="615" y1="250" x2="615" y2="300" stroke="#36506c" stroke-width="2.2" marker-end="url(#arrow)"/>
+  <line x1="850" y1="250" x2="850" y2="300" stroke="#36506c" stroke-width="2.2" marker-end="url(#arrow)"/>
+
+  <path d="M766 246 C710 284, 596 284, 464 238" fill="none" stroke="#36506c" stroke-width="2.2" marker-end="url(#arrow)"/>
+  <text x="498" y="286" class="small">file-line citations back to the main agent</text>
+</svg>
+

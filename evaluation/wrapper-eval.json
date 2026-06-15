@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-06-15T14:23:51+00:00",
+  "project": "fastcontext-agent-tools",
+  "scope": "MCP wrapper and bundled Codex skill",
+  "environment": {
+    "python": "3.12.8",
+    "platform": "macOS-26.3.1-arm64-arm-64bit"
+  },
+  "summary": {
+    "checks_total": 2,
+    "checks_passed": 2,
+    "checks_failed": 0
+  },
+  "checks": [
+    {
+      "name": "unit_tests",
+      "status": "pass",
+      "returncode": 0,
+      "duration_seconds": 0.129,
+      "stdout": "",
+      "stderr": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.003s\n\nOK"
+    },
+    {
+      "name": "mcp_stdio_smoke",
+      "status": "pass",
+      "duration_seconds": 0.393,
+      "tools": [
+        "fastcontext_explore",
+        "fastcontext_explore_with_trace",
+        "fastcontext_health"
+      ],
+      "citations_returned": 2,
+      "trace_created": true,
+      "path_guard_rejected_outside_repo": true
+    }
+  ],
+  "limitations": [
+    "This evaluation uses a fake fastcontext CLI to verify wrapper behavior without a GPU or model endpoint.",
+    "FastContext model-quality claims are not reproduced here; see the Microsoft FastContext paper and model card."
+  ]
+}
