@@ -26,6 +26,12 @@ Ask an LLM agent:
 
 > Install FastContext Agent Tools from `https://github.com/Jakevin/fastcontext-agent-tools`, run `python -m pip install -e .`, configure `python -m fastcontext_mcp` as a stdio MCP server with `BASE_URL`, `MODEL`, `API_KEY`, and `FASTCONTEXT_ALLOWED_ROOTS`, then enable `skills/fastcontext-explorer`.
 
+Direct install command for Codex-style local skills:
+
+```bash
+git clone https://github.com/Jakevin/fastcontext-agent-tools && cd fastcontext-agent-tools && python -m pip install -e . && mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills" && ln -sfn "$(pwd)/skills/fastcontext-explorer" "${CODEX_HOME:-$HOME/.codex}/skills/fastcontext-explorer"
+```
+
 ## Why This Exists
 
 Microsoft FastContext separates repository exploration from code solving. The
@@ -208,4 +214,3 @@ python evaluation/run_wrapper_eval.py
 ## License
 
 MIT
-
