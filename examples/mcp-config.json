@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "fastcontext": {
+      "command": "fastcontext-mcp",
+      "env": {
+        "BASE_URL": "https://your-endpoint.example/v1",
+        "MODEL": "microsoft/FastContext-1.0-4B-SFT",
+        "API_KEY": "your-api-key",
+        "FASTCONTEXT_ALLOWED_ROOTS": "/path/to/repos"
+      }
+    }
+  }
+}
+

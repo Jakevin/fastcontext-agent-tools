@@ -1,0 +1,12 @@
+interface:
+  display_name: "FastContext Explorer"
+  short_description: "Find repo context with FastContext"
+  default_prompt: "Use $fastcontext-explorer to locate the code regions relevant to this repository task."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "fastcontext"
+      description: "Local FastContext MCP server exposing read-only repository exploration."
+      transport: "stdio"
+policy:
+  allow_implicit_invocation: true
