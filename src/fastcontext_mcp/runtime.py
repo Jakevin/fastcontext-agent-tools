@@ -5,11 +5,12 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-FASTCONTEXT_MODULE = "fastcontext.cli"
+FASTCONTEXT_MODULE = "fastcontext_mcp.fastcontext_cli"
 
 
 class McpError(Exception):
@@ -32,7 +33,8 @@ def parse_citations(text: str) -> list[Citation]:
     body = match.group(1) if match else text
     citations: list[Citation] = []
     pattern = re.compile(
-        r"^\s*(?P<path>[^:\n]+):(?P<start>\d+)(?:-(?P<end>\d+))?\s*$"
+        r"^\s*(?P<path>[^:\n]+):(?P<start>\d+)(?:-(?P<end>\d+))?"
+        r"(?:\s+.*)?$"
     )
     for line in body.splitlines():
         candidate = line.strip().strip("`")
@@ -51,6 +53,44 @@ def parse_citations(text: str) -> list[Citation]:
             )
         )
     return citations
+
+
+def _line_count(path: Path) -> int:
+    with path.open(encoding="utf-8", errors="replace") as handle:
+        return sum(1 for _ in handle)
+
+
+def validate_citations(repo: Path, citations: list[Citation]) -> tuple[list[dict[str, int | str]], list[str]]:
+    valid: list[dict[str, int | str]] = []
+    warnings: list[str] = []
+    repo_root = repo.resolve()
+    for citation in citations:
+        candidate = Path(citation.path).expanduser()
+        if not candidate.is_absolute():
+            candidate = repo_root / candidate
+        resolved = candidate.resolve()
+        if not (resolved == repo_root or repo_root in resolved.parents):
+            warnings.append(f"citation outside repo: {citation.path}")
+            continue
+        if not resolved.is_file():
+            warnings.append(f"citation file does not exist: {citation.path}")
+            continue
+        start_line = citation.start_line
+        end_line = citation.end_line
+        if start_line is None or end_line is None or start_line < 1 or end_line < start_line:
+            warnings.append(f"citation has invalid line range: {citation.path}")
+            continue
+        if end_line > _line_count(resolved):
+            warnings.append(f"citation line range exceeds file length: {citation.path}")
+            continue
+        valid.append(
+            {
+                "path": str(resolved),
+                "start_line": start_line,
+                "end_line": end_line,
+            }
+        )
+    return valid, warnings
 
 
 def _env_present(name: str) -> bool:
@@ -90,6 +130,23 @@ def resolve_repo_path(repo_path: str) -> Path:
             {"allowed_roots": roots_text},
         )
     return repo
+
+
+def build_fastcontext_prompt(repo: Path, query: str) -> str:
+    return (
+        f"Workspace root: {repo}\n"
+        "Do not shorten this path in tool arguments. Use absolute paths under "
+        "the workspace root for Read, Grep, and Glob.\n"
+        "Only cite files and line ranges that appeared in successful tool "
+        "results. If a path lookup fails, correct the path and search again. "
+        "Prefer source files over generated output when both represent the "
+        "same implementation. When several candidates match, prefer the "
+        "workspace's primary source tree over nested sample, legacy, build, "
+        "or generated application copies unless the user names that nested "
+        "application explicitly. If the user names an explicit file path, "
+        "inspect that exact path under the workspace root before broad search.\n\n"
+        f"User query: {query}"
+    )
 
 
 def health() -> dict[str, Any]:
@@ -133,12 +190,13 @@ def run_fastcontext(args: dict[str, Any], *, force_trace: bool = False) -> dict[
         raise McpError(-32602, "timeout_seconds must be between 10 and 3600")
 
     citation = bool(args.get("citation", True))
+    effective_query = build_fastcontext_prompt(repo, query)
     command = [
         sys.executable,
         "-m",
         FASTCONTEXT_MODULE,
         "--query",
-        query,
+        effective_query,
         "--max-turns",
         str(max_turns),
     ]
@@ -154,9 +212,9 @@ def run_fastcontext(args: dict[str, Any], *, force_trace: bool = False) -> dict[
         else:
             traj = repo / ".fastcontext" / "trajectory.jsonl"
         traj.parent.mkdir(parents=True, exist_ok=True)
-        command.extend(["--traj", str(traj)])
     else:
-        traj = None
+        traj = Path(tempfile.gettempdir()) / f"fastcontext-mcp-{os.getpid()}.jsonl"
+    command.extend(["--traj", str(traj)])
 
     try:
         completed = subprocess.run(
@@ -176,23 +234,16 @@ def run_fastcontext(args: dict[str, Any], *, force_trace: bool = False) -> dict[
         ) from exc
 
     output = completed.stdout.strip()
-    citations = [
-        {
-            "path": citation_item.path,
-            "start_line": citation_item.start_line,
-            "end_line": citation_item.end_line,
-        }
-        for citation_item in parse_citations(output)
-    ]
+    citations, citation_warnings = validate_citations(repo, parse_citations(output))
     result = {
         "ok": completed.returncode == 0,
         "returncode": completed.returncode,
         "repo_path": str(repo),
         "query": query,
         "citations": citations,
+        "citation_warnings": citation_warnings,
         "raw_output": output,
         "stderr": completed.stderr.strip(),
+        "trajectory_path": str(traj),
     }
-    if traj is not None:
-        result["trajectory_path"] = str(traj)
     return result
