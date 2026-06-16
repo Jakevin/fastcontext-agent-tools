@@ -148,6 +148,22 @@ The current result is not official-ready:
 - Serving notes to match before claiming official parity: SGLang serving,
   `qwen` tool-call parser, and 262K context length
 
+## Official Serving Preflight
+
+`evaluation/local-official-serving-preflight.json` captures the local runtime
+state after combining the endpoint readiness artifact with local environment
+checks. The current result is not official-ready:
+
+- Endpoint readiness: `false`
+- Observed model: `fastcontext-tools-64k:latest`
+- Runtime blocker: SGLang is not installed in the project Python environment
+- Runtime blocker: CUDA/NVIDIA serving runtime is not available locally
+- Platform observed by the project environment: Darwin arm64
+
+This preflight does not claim that FastContext cannot run elsewhere. It records
+that this local project environment is not the official-style serving setup used
+for Microsoft's published benchmark claims.
+
 ### Re-Running
 
 The repeatable harness is:
@@ -166,6 +182,12 @@ For the endpoint readiness artifact:
 
 ```bash
 curl -sS "$BASE_URL/models" | uv run python -m evaluation.endpoint_readiness - --output evaluation/local-endpoint-readiness.json
+```
+
+For the official-serving preflight artifact:
+
+```bash
+uv run python -m evaluation.official_serving_preflight --endpoint-readiness evaluation/local-endpoint-readiness.json --output evaluation/local-official-serving-preflight.json
 ```
 
 The benchmark requires a FastContext-compatible endpoint and `tiktoken`.

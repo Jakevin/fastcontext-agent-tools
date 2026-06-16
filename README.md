@@ -187,6 +187,8 @@ Local before/after FastContext impact data:
   `microsoft/FastContext-1.0-4B-SFT` SGLang 262K setup.
 - Endpoint readiness check: local `/v1/models` is not official-ready because it
   does not expose `microsoft/FastContext-1.0-4B-SFT`.
+- Official serving preflight: local runtime is not official-ready because the
+  project env lacks SGLang and no CUDA/NVIDIA runtime is available.
 - These local smoke tests do not match Microsoft's benchmark harness and do not
   reproduce the official gains yet.
 
@@ -210,10 +212,12 @@ Artifacts:
 - FanPlan before/after token smoke test: [evaluation/fanplan-fcm-before-after.json](evaluation/fanplan-fcm-before-after.json)
 - Latest aggregate before/after run: [evaluation/local-before-after-results.json](evaluation/local-before-after-results.json)
 - Local endpoint readiness: [evaluation/local-endpoint-readiness.json](evaluation/local-endpoint-readiness.json)
+- Official serving preflight: [evaluation/local-official-serving-preflight.json](evaluation/local-official-serving-preflight.json)
 - MICE query-variant matrix: [evaluation/local-query-matrix-results.json](evaluation/local-query-matrix-results.json)
 - Matrix task spec: [evaluation/token-benchmark-matrix-tasks.json](evaluation/token-benchmark-matrix-tasks.json)
 - Repeatable benchmark harness: [evaluation/token_benchmark.py](evaluation/token_benchmark.py)
 - Endpoint readiness checker: [evaluation/endpoint_readiness.py](evaluation/endpoint_readiness.py)
+- Official serving preflight checker: [evaluation/official_serving_preflight.py](evaluation/official_serving_preflight.py)
 - Full report: [docs/REPORT.md](docs/REPORT.md)
 
 The local evaluation uses a fake `fastcontext.cli` package so it can validate

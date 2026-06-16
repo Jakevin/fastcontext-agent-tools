@@ -1,0 +1,31 @@
+{
+  "ready": false,
+  "official_requirements": [
+    "OpenAI-compatible /v1/chat/completions endpoint",
+    "microsoft/FastContext-1.0-4B-SFT model exposed by /v1/models",
+    "SGLang serving runtime",
+    "qwen tool-call parser",
+    "262K context length"
+  ],
+  "environment": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "python_version": "3.12.8",
+    "has_uv": true,
+    "has_nvidia_smi": false,
+    "has_sglang": false,
+    "has_torch": false,
+    "torch_cuda_available": false,
+    "torch_mps_available": false
+  },
+  "endpoint_ready": false,
+  "observed_model_ids": [
+    "fastcontext-tools-64k:latest"
+  ],
+  "blockers": [
+    "endpoint is not official-ready; /v1/models must expose microsoft/FastContext-1.0-4B-SFT",
+    "SGLang is not installed in the current Python environment",
+    "CUDA/NVIDIA runtime is not available for the documented serving path"
+  ],
+  "warnings": []
+}

@@ -79,6 +79,8 @@ The newer MICE query-variant matrix adds three query styles with two repeats eac
 
 `evaluation/local-endpoint-readiness.json` makes that setup gap repeatable: the current local `/v1/models` response is `ready=false`, observes only `fastcontext-tools-64k:latest`, and is missing `microsoft/FastContext-1.0-4B-SFT`.
 
+`evaluation/local-official-serving-preflight.json` extends that check to the local runtime. It is also `ready=false`: the project environment has no SGLang install and no CUDA/NVIDIA runtime, so it should not be compared directly with the official SGLang 262K serving setup.
+
 Model-quality and broader task-impact claims remain sourced from Microsoft FastContext because this repository has not re-run the full benchmark setup.
 
 ## Installation Contract

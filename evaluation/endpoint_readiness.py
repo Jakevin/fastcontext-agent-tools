@@ -6,7 +6,7 @@ import sys
 from collections.abc import Mapping
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Final
+from typing import Final, cast
 
 REQUIRED_MODEL_IDS: Final = ["microsoft/FastContext-1.0-4B-SFT"]
 OFFICIAL_SERVING_NOTES: Final = [
@@ -61,7 +61,7 @@ def read_model_ids(payload: Mapping[str, JsonValue]) -> set[str]:
 
 def load_payload(path: Path) -> Mapping[str, JsonValue]:
     text = sys.stdin.read() if str(path) == "-" else path.read_text(encoding="utf-8")
-    raw: JsonValue = json.loads(text)
+    raw = cast(JsonValue, json.loads(text))
     if not isinstance(raw, dict):
         raise SystemExit("models payload must be a JSON object")
     return raw
@@ -72,12 +72,8 @@ def main() -> int:
     _ = parser.add_argument("models_json", type=Path)
     _ = parser.add_argument("--output", type=Path)
     args: argparse.Namespace = parser.parse_args()
-    models_json = args.models_json
-    output = args.output
-    if not isinstance(models_json, Path):
-        raise SystemExit("models_json must be a path or '-'")
-    if output is not None and not isinstance(output, Path):
-        raise SystemExit("--output must be a path")
+    models_json = cast(Path, args.models_json)
+    output = cast(Path | None, args.output)
 
     result = evaluate_models(load_payload(models_json))
     text = json.dumps(asdict(result), ensure_ascii=False, indent=2) + "\n"

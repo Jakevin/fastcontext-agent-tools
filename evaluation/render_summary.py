@@ -75,7 +75,8 @@ def render_svg(summary: WrapperSummary) -> str:
   <text x="640" y="432" class="metric-label">2,279 direct -> 2,360 corrected (+3.6%)</text>
   <text x="526" y="468" class="fine">FastContext raw: 81 tokens, cited nonexistent paths.</text>
   <text x="526" y="494" class="fine">MICE matrix: 3 query styles x 2 repeats, 0/6 ground-truth hits.</text>
-  <text x="526" y="520" class="fine">Wrapper QA remains separate: {escape(wrapper_status)}.</text>
+  <text x="526" y="520" class="fine">Official preflight: not ready; endpoint, SGLang, CUDA blockers.</text>
+  <text x="526" y="536" class="fine">Wrapper QA remains separate: {escape(wrapper_status)}.</text>
 
   <text x="48" y="594" class="note">Local smoke tests are small and task-specific. Official task-impact claims remain attributed to Microsoft.</text>
 </svg>
