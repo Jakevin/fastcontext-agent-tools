@@ -39,7 +39,7 @@ def run_command(command: list[str], env: dict[str, str] | None = None) -> dict[s
     }
 
 
-def write_fake_fastcontext(package_root: Path) -> Path:
+def write_fake_fastcontext(package_root: Path) -> None:
     package_dir = package_root / "fastcontext"
     package_dir.mkdir(parents=True)
     (package_dir / "__init__.py").write_text("", encoding="utf-8")
@@ -66,13 +66,12 @@ if args.traj:
     }) + "\\n")
 
 print("<final_answer>")
-print("src/app.py:1-3")
-print("tests/test_app.py:5-7")
+print("src/app.py:1-2")
+print("tests/test_app.py:1-2")
 print("</final_answer>")
 """,
         encoding="utf-8",
     )
-    return fake_cli
 
 
 def send_message(process: subprocess.Popen[bytes], message: dict[str, Any]) -> None:
@@ -117,7 +116,7 @@ def run_mcp_smoke() -> dict[str, Any]:
         (repo / "tests" / "test_app.py").write_text("def test_handler():\n    assert True\n", encoding="utf-8")
 
         fake_site = temp_root / "fake-site"
-        fake_cli = write_fake_fastcontext(fake_site)
+        write_fake_fastcontext(fake_site)
 
         env = os.environ.copy()
         env.update(
@@ -196,10 +195,12 @@ def run_mcp_smoke() -> dict[str, Any]:
 
             health_payload = json.loads(health["result"]["content"][0]["text"])
             assert health_payload["ok"] is True
-            assert health_payload["fastcontext_module"] == "fastcontext.cli"
-            assert health_payload["fastcontext_command"] == [sys.executable, "-m", "fastcontext.cli"]
-            assert fake_cli.exists()
-
+            assert health_payload["fastcontext_module"] == "fastcontext_mcp.fastcontext_cli"
+            assert health_payload["fastcontext_command"] == [
+                sys.executable,
+                "-m",
+                "fastcontext_mcp.fastcontext_cli",
+            ]
             explore_payload = json.loads(explore["result"]["content"][0]["text"])
             assert explore_payload["ok"] is True
             assert len(explore_payload["citations"]) == 2

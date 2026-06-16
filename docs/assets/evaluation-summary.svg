@@ -11,8 +11,8 @@
   <rect width="860" height="360" fill="#f8faf9"/>
   <rect x="24" y="24" width="812" height="312" rx="8" fill="#ffffff" stroke="#d6dde2"/>
   <text x="44" y="68" class="title">FastContext MCP Wrapper Evaluation</text>
-  <text x="44" y="94" class="subtitle">Generated 2026-06-15 15:04:08 UTC</text>
-  <text x="44" y="122" class="label">Unit Tests</text><rect x="286" y="105" width="51" height="24" rx="4" fill="#1f9d55"/><text x="355" y="122" class="value">PASS · 0.061s</text><text x="44" y="170" class="label">Mcp Stdio Smoke</text><rect x="286" y="153" width="55" height="24" rx="4" fill="#1f9d55"/><text x="359" y="170" class="value">PASS · 0.092s</text>
+  <text x="44" y="94" class="subtitle">Generated 2026-06-16 00:06:42 UTC</text>
+  <text x="44" y="122" class="label">Unit Tests</text><rect x="286" y="105" width="97" height="24" rx="4" fill="#1f9d55"/><text x="401" y="122" class="value">PASS · 0.442s</text><text x="44" y="170" class="label">Mcp Stdio Smoke</text><rect x="286" y="153" width="56" height="24" rx="4" fill="#1f9d55"/><text x="360" y="170" class="value">PASS · 0.101s</text>
   <text x="44" y="306" class="note">Scope: wrapper protocol, citation parsing, trace output, and path safety.</text>
   <text x="44" y="326" class="note">Model-quality results are cited separately from Microsoft FastContext.</text>
 </svg>
