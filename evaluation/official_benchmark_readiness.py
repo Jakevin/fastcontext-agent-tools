@@ -10,6 +10,11 @@ from pathlib import Path
 from typing import Final, cast
 
 from evaluation.endpoint_readiness import JsonValue
+from evaluation.official_benchmark_datasets import (
+    DatasetProbe,
+    collect_official_dataset_probes,
+    dataset_probes_passed,
+)
 from evaluation.official_benchmark_env import EnvConfigCheck, check_env_config
 from evaluation.official_benchmark_probes import (
     CommandProbe,
@@ -66,6 +71,7 @@ class OfficialBenchmarkReadiness:
     env_config: EnvConfigCheck
     official_serving_ready: bool
     command_probes: list[CommandProbe]
+    dataset_probes: list[DatasetProbe]
     official_commands: list[str]
     blockers: list[str]
     warnings: list[str]
@@ -77,11 +83,13 @@ def evaluate_benchmark_readiness(
     serving_preflight: Mapping[str, JsonValue] | None,
     tools: ToolAvailability,
     command_probes: list[CommandProbe] | None = None,
+    dataset_probes: list[DatasetProbe] | None = None,
 ) -> OfficialBenchmarkReadiness:
     missing_files = missing_required_files(upstream_root)
     env_config = check_env_config(config_path)
     serving_ready = read_bool(dict(serving_preflight) if serving_preflight else None, "ready")
     probes = list(command_probes or [])
+    datasets = list(dataset_probes or [])
     blockers = collect_blockers(
         upstream_root=upstream_root,
         missing_files=missing_files,
@@ -89,8 +97,9 @@ def evaluate_benchmark_readiness(
         env_config=env_config,
         serving_ready=serving_ready,
         command_probes=probes,
+        dataset_probes=datasets,
     )
-    warnings = collect_warnings(upstream_root, probes)
+    warnings = collect_warnings(upstream_root, probes, datasets)
     return OfficialBenchmarkReadiness(
         ready=not blockers,
         upstream_root=str(upstream_root.resolve()) if upstream_root else None,
@@ -101,6 +110,7 @@ def evaluate_benchmark_readiness(
         env_config=env_config,
         official_serving_ready=serving_ready,
         command_probes=probes,
+        dataset_probes=datasets,
         official_commands=list(OFFICIAL_COMMANDS),
         blockers=blockers,
         warnings=warnings,
@@ -139,6 +149,7 @@ def collect_blockers(
     env_config: EnvConfigCheck,
     serving_ready: bool,
     command_probes: list[CommandProbe],
+    dataset_probes: list[DatasetProbe],
 ) -> list[str]:
     blockers: list[str] = []
     if upstream_root is None:
@@ -163,15 +174,24 @@ def collect_blockers(
         blockers.append("official serving preflight is not ready")
     if command_probes and not probes_passed(command_probes):
         blockers.append("official benchmark CLI smoke probes failed")
+    if dataset_probes and not dataset_probes_passed(dataset_probes):
+        blockers.append("official benchmark dataset probes failed")
     return blockers
 
 
-def collect_warnings(upstream_root: Path | None, command_probes: list[CommandProbe]) -> list[str]:
+def collect_warnings(
+    upstream_root: Path | None,
+    command_probes: list[CommandProbe],
+    dataset_probes: list[DatasetProbe],
+) -> list[str]:
     if upstream_root is None:
         return ["Run against a clone of https://github.com/microsoft/fastcontext after uv build."]
+    warnings: list[str] = []
     if not command_probes:
-        return ["Official benchmark CLI smoke probes were not run."]
-    return []
+        warnings.append("Official benchmark CLI smoke probes were not run.")
+    if not dataset_probes:
+        warnings.append("Official benchmark dataset probes were not run.")
+    return warnings
 
 
 def collect_tools() -> ToolAvailability:
@@ -225,12 +245,18 @@ def main() -> int:
         action="store_true",
         help="Run safe official benchmark CLI smoke probes and record their output excerpts.",
     )
+    _ = parser.add_argument(
+        "--probe-datasets",
+        action="store_true",
+        help="Load one sample from each official benchmark dataset and record access evidence.",
+    )
     args: argparse.Namespace = parser.parse_args()
     upstream_root = cast(Path | None, args.upstream_root)
     config_path = cast(Path | None, args.config)
     serving_preflight = cast(Path | None, args.serving_preflight)
     output = cast(Path, args.output)
     probe_commands = cast(bool, args.probe_commands)
+    probe_datasets = cast(bool, args.probe_datasets)
 
     result = evaluate_benchmark_readiness(
         upstream_root=upstream_root,
@@ -238,6 +264,7 @@ def main() -> int:
         serving_preflight=load_json_object(serving_preflight),
         tools=collect_tools(),
         command_probes=collect_official_command_probes(upstream_root) if probe_commands else None,
+        dataset_probes=collect_official_dataset_probes(upstream_root) if probe_datasets else None,
     )
     text = json.dumps(asdict(result), ensure_ascii=False, indent=2) + "\n"
     _ = output.write_text(text, encoding="utf-8")

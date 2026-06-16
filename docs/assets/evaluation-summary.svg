@@ -17,7 +17,7 @@
   <rect x="24" y="24" width="912" height="592" rx="12" fill="#ffffff" stroke="#d6dde2"/>
 
   <text x="48" y="68" class="title">FastContext Evidence: Official vs Local</text>
-  <text x="48" y="94" class="subtitle">Generated 2026-06-16 03:24:29 UTC - official claims, local token smoke test, and QA are separated.</text>
+  <text x="48" y="94" class="subtitle">Generated 2026-06-16 03:31:13 UTC - official claims, local token smoke test, and QA are separated.</text>
 
   <rect x="48" y="122" width="864" height="98" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
   <text x="72" y="154" class="card-title">Conceptual workflow contract</text>
@@ -52,7 +52,7 @@
   <text x="526" y="468" class="fine">FastContext raw: 81 tokens, cited nonexistent paths.</text>
   <text x="526" y="494" class="fine">MICE matrix: 3 query styles x 2 repeats, 0/6 ground-truth hits.</text>
   <text x="526" y="520" class="fine">Official preflight: not ready; endpoint, SGLang, CUDA blockers.</text>
-  <text x="526" y="536" class="fine">Benchmark gate: upstream built; CLI probes pass; credentials/serving blocked.</text>
+  <text x="526" y="536" class="fine">Benchmark gate: CLI+dataset probes pass; credentials/serving blocked.</text>
   <text x="526" y="552" class="fine">Wrapper QA remains separate: 7/7 checks pass.</text>
 
   <text x="48" y="594" class="note">Local smoke tests are small and task-specific. Official task-impact claims remain attributed to Microsoft.</text>

@@ -190,8 +190,9 @@ Local before/after FastContext impact data:
 - Official serving preflight: local runtime is not official-ready because the
   project env lacks SGLang and no CUDA/NVIDIA runtime is available.
 - Official benchmark readiness: upstream `microsoft/fastcontext` checkout,
-  wheel build, and safe benchmark CLI probes are present, but benchmark
-  credentials and official serving readiness are still missing.
+  wheel build, safe benchmark CLI probes, and one-sample official dataset
+  probes are present, but benchmark credentials and official serving readiness
+  are still missing.
 - These local smoke tests do not match Microsoft's benchmark harness and do not
   reproduce the official gains yet.
 

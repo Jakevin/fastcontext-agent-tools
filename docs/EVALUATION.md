@@ -188,6 +188,9 @@ The current result is not ready:
 - Local tools available: `uv=true`, `docker=true`, `docker_daemon=true`
 - Official benchmark CLI probes: `bench_mini_swe_agent.py --help`,
   `bench_fastcontext.py --help`, and `run_score.py` import-only check all pass
+- Official benchmark dataset probes: one `test[:1]` sample loads from
+  `princeton-nlp/SWE-Bench_Verified`, `SWE-bench/SWE-bench_Multilingual`, and
+  `ScaleAI/SWE-bench_Pro`
 
 This check is stricter than the local smoke tests. It records whether this
 machine can run Microsoft's benchmark commands, not whether this MCP wrapper's
@@ -227,7 +230,8 @@ uv run python -m evaluation.official_benchmark_readiness \
   --config /absolute/path/to/microsoft/fastcontext/.env \
   --serving-preflight evaluation/local-official-serving-preflight.json \
   --output evaluation/local-official-benchmark-readiness.json \
-  --probe-commands
+  --probe-commands \
+  --probe-datasets
 ```
 
 The benchmark requires a FastContext-compatible endpoint and `tiktoken`.

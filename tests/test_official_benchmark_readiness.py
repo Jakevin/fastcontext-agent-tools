@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from evaluation.endpoint_readiness import JsonValue  # noqa: E402
+from evaluation.official_benchmark_datasets import DatasetProbe  # noqa: E402
 from evaluation.official_benchmark_probes import CommandProbe  # noqa: E402
 from evaluation.official_benchmark_readiness import (  # noqa: E402
     ToolAvailability,
@@ -118,6 +119,33 @@ class OfficialBenchmarkReadinessTests(unittest.TestCase):
 
         self.assertIn("official benchmark CLI smoke probes failed", result.blockers)
         self.assertEqual(result.command_probes, [probe])
+
+    def test_failed_dataset_probe_reports_blocker(self) -> None:
+        serving: dict[str, JsonValue] = {"ready": True}
+        probe = DatasetProbe(
+            name="swebench-multilingual",
+            dataset="SWE-bench/SWE-bench_Multilingual",
+            split="test[:1]",
+            command="uv run --group benchmark python -c ...",
+            cwd="/tmp/upstream",
+            returncode=1,
+            duration_seconds=0.1,
+            sample_count=None,
+            first_instance_id=None,
+            stdout_excerpt="",
+            stderr_excerpt="dataset failed",
+        )
+
+        result = evaluate_benchmark_readiness(
+            upstream_root=None,
+            config_path=None,
+            serving_preflight=serving,
+            tools=ToolAvailability(uv=True, docker=True, docker_daemon=True),
+            dataset_probes=[probe],
+        )
+
+        self.assertIn("official benchmark dataset probes failed", result.blockers)
+        self.assertEqual(result.dataset_probes, [probe])
 
 
 if __name__ == "__main__":

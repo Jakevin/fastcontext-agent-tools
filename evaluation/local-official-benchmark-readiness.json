@@ -47,7 +47,7 @@
       "command": "uv run --group benchmark python benchmark/evaluation/bench_mini_swe_agent.py --help",
       "cwd": "/Users/jakevinlo/project/mcp/factcontext-mcp/github-repo-https-github-com-jakevin/outputs/microsoft-fastcontext",
       "returncode": 0,
-      "duration_seconds": 0.942,
+      "duration_seconds": 1.066,
       "stdout_excerpt": "usage: bench_mini_swe_agent.py [-h] [--bench BENCH] [--experiment EXPERIMENT]\n                               [--config CONFIG] [--agent-config AGENT_CONFIG]\n                               [--baseline-agent-config BASELINE_AGENT_CONFIG]\n                               [--logs-dir LOGS_DIR] [--output OUTPUT]\n                               [--workers WORKERS] [--run-head RUN_HEAD]\n                               [--filter FILTER] [--redo-existing]\n                               [--no-fastcontext]\n\nBenchmark mini-swe-agent + fastcontext on SWE-bench\n\noptions:\n  -h, --help            show this help message and exit\n  --bench BENCH         Benchmark dataset name or path to JSONL file\n  --experiment EXPERIMENT\n                        Experiment name\n  --config CONFIG       Path to model config .env file (main agent +\n                        fastcontext)\n  --agent-config AGENT_CONFIG\n                        Path to mini-swe-agent YAML config. Defaults to a\n                        bundled prompts/*.yaml config\n  --baseline-agent-config BASELINE_AGENT_CONFIG\n                        Path to mini-swe-agent YAML config used with --no-\n                        fastcontext\n  --logs-dir LOGS_DIR...",
       "stderr_excerpt": ""
     },
@@ -56,7 +56,7 @@
       "command": "uv run --group benchmark python benchmark/swebench/bench_fastcontext.py --help",
       "cwd": "/Users/jakevinlo/project/mcp/factcontext-mcp/github-repo-https-github-com-jakevin/outputs/microsoft-fastcontext",
       "returncode": 0,
-      "duration_seconds": 0.644,
+      "duration_seconds": 0.633,
       "stdout_excerpt": "usage: bench_fastcontext.py [-h] [--bench BENCH] [--experiment EXPERIMENT]\n                            [--num-threads NUM_THREADS] [--run-head RUN_HEAD]\n                            [--prediction-file PREDICTION_FILE]\n                            [--local-mount-dir LOCAL_MOUNT_DIR] [--iid IID]\n\noptions:\n  -h, --help            show this help message and exit\n  --bench BENCH\n  --experiment EXPERIMENT\n  --num-threads NUM_THREADS\n  --run-head RUN_HEAD\n  --prediction-file PREDICTION_FILE\n  --local-mount-dir LOCAL_MOUNT_DIR\n  --iid IID",
       "stderr_excerpt": ""
     },
@@ -65,9 +65,50 @@
       "command": "uv run --group benchmark python -c 'import sys; sys.path.insert(0, '\"'\"'benchmark/evaluation'\"'\"'); import run_score; print('\"'\"'run_score import ok'\"'\"')'",
       "cwd": "/Users/jakevinlo/project/mcp/factcontext-mcp/github-repo-https-github-com-jakevin/outputs/microsoft-fastcontext",
       "returncode": 0,
-      "duration_seconds": 0.644,
+      "duration_seconds": 0.639,
       "stdout_excerpt": "run_score import ok",
       "stderr_excerpt": ""
+    }
+  ],
+  "dataset_probes": [
+    {
+      "name": "swebench-verified",
+      "dataset": "princeton-nlp/SWE-Bench_Verified",
+      "split": "test[:1]",
+      "command": "uv run --group benchmark python -c 'import json; from datasets import load_dataset; sample = load_dataset('\"'\"'princeton-nlp/SWE-Bench_Verified'\"'\"', split='\"'\"'test[:1]'\"'\"'); first = sample[0].get('\"'\"'instance_id'\"'\"') if len(sample) else None; print(json.dumps({'\"'\"'sample_count'\"'\"': len(sample), '\"'\"'first_instance_id'\"'\"': first}))'",
+      "cwd": "/Users/jakevinlo/project/mcp/factcontext-mcp/github-repo-https-github-com-jakevin/outputs/microsoft-fastcontext",
+      "returncode": 0,
+      "duration_seconds": 5.328,
+      "sample_count": 1,
+      "first_instance_id": "astropy__astropy-12907",
+      "stdout_excerpt": "{\"sample_count\": 1, \"first_instance_id\": \"astropy__astropy-12907\"}",
+      "stderr_excerpt": "Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads."
+    },
+    {
+      "name": "swebench-multilingual",
+      "dataset": "SWE-bench/SWE-bench_Multilingual",
+      "split": "test[:1]",
+      "command": "uv run --group benchmark python -c 'import json; from datasets import load_dataset; sample = load_dataset('\"'\"'SWE-bench/SWE-bench_Multilingual'\"'\"', split='\"'\"'test[:1]'\"'\"'); first = sample[0].get('\"'\"'instance_id'\"'\"') if len(sample) else None; print(json.dumps({'\"'\"'sample_count'\"'\"': len(sample), '\"'\"'first_instance_id'\"'\"': first}))'",
+      "cwd": "/Users/jakevinlo/project/mcp/factcontext-mcp/github-repo-https-github-com-jakevin/outputs/microsoft-fastcontext",
+      "returncode": 0,
+      "duration_seconds": 3.334,
+      "sample_count": 1,
+      "first_instance_id": "apache__druid-13704",
+      "stdout_excerpt": "{\"sample_count\": 1, \"first_instance_id\": \"apache__druid-13704\"}",
+      "stderr_excerpt": "Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads."
+    },
+    {
+      "name": "swebench-pro",
+      "dataset": "ScaleAI/SWE-bench_Pro",
+      "split": "test[:1]",
+      "command": "uv run --group benchmark python -c 'import json; from datasets import load_dataset; sample = load_dataset('\"'\"'ScaleAI/SWE-bench_Pro'\"'\"', split='\"'\"'test[:1]'\"'\"'); first = sample[0].get('\"'\"'instance_id'\"'\"') if len(sample) else None; print(json.dumps({'\"'\"'sample_count'\"'\"': len(sample), '\"'\"'first_instance_id'\"'\"': first}))'",
+      "cwd": "/Users/jakevinlo/project/mcp/factcontext-mcp/github-repo-https-github-com-jakevin/outputs/microsoft-fastcontext",
+      "returncode": 0,
+      "duration_seconds": 4.592,
+      "sample_count": 1,
+      "first_instance_id": "instance_NodeBB__NodeBB-04998908ba6721d64eba79ae3b65a351dcfbc5b5-vnan",
+      "stdout_excerpt": "{\"sample_count\": 1, \"first_instance_id\": \"instance_NodeBB__NodeBB-04998908ba6721d64eba79ae3b65a351dcfbc5b5-vnan\"}",
+      "stderr_excerpt": "Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads."
     }
   ],
   "official_commands": [
