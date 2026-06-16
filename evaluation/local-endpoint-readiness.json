@@ -1,0 +1,20 @@
+{
+  "ready": false,
+  "observed_model_ids": [
+    "fastcontext-tools-64k:latest"
+  ],
+  "required_model_ids": [
+    "microsoft/FastContext-1.0-4B-SFT"
+  ],
+  "missing_required_model_ids": [
+    "microsoft/FastContext-1.0-4B-SFT"
+  ],
+  "official_serving_notes": [
+    "SGLang serving",
+    "qwen tool-call parser",
+    "262K context length"
+  ],
+  "reasons": [
+    "official FastContext model is not exposed by /v1/models"
+  ]
+}

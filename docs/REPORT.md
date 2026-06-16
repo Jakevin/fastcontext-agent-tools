@@ -77,6 +77,8 @@ Separate local token smoke tests are committed under `evaluation/*before-after*.
 
 The newer MICE query-variant matrix adds three query styles with two repeats each. All 6 FastContext runs missed `app/routers/logs.js`; one run timed out. The local endpoint exposed `fastcontext-tools-64k:latest`, which is not the official `microsoft/FastContext-1.0-4B-SFT` SGLang 262K configuration documented by Microsoft.
 
+`evaluation/local-endpoint-readiness.json` makes that setup gap repeatable: the current local `/v1/models` response is `ready=false`, observes only `fastcontext-tools-64k:latest`, and is missing `microsoft/FastContext-1.0-4B-SFT`.
+
 Model-quality and broader task-impact claims remain sourced from Microsoft FastContext because this repository has not re-run the full benchmark setup.
 
 ## Installation Contract

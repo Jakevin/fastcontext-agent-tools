@@ -135,6 +135,19 @@ The matrix did not reproduce the official token gains. The local endpoint used
 `microsoft/FastContext-1.0-4B-SFT` served with SGLang, `qwen` tool-call parsing,
 and 262K context.
 
+## Endpoint Readiness
+
+`evaluation/local-endpoint-readiness.json` captures the current local
+`/v1/models` response after passing it through `evaluation.endpoint_readiness`.
+The current result is not official-ready:
+
+- Observed model: `fastcontext-tools-64k:latest`
+- Required official model: `microsoft/FastContext-1.0-4B-SFT`
+- Missing requirement: the official FastContext model is not exposed by
+  `/v1/models`
+- Serving notes to match before claiming official parity: SGLang serving,
+  `qwen` tool-call parser, and 262K context length
+
 ### Re-Running
 
 The repeatable harness is:
@@ -149,7 +162,13 @@ For the query-variant matrix:
 uv run --extra dev python -m evaluation.token_benchmark evaluation/token-benchmark-matrix-tasks.json --matrix --repeats 2 --output evaluation/local-query-matrix-results.json
 ```
 
-It requires a FastContext-compatible endpoint and `tiktoken`.
+For the endpoint readiness artifact:
+
+```bash
+curl -sS "$BASE_URL/models" | uv run python -m evaluation.endpoint_readiness - --output evaluation/local-endpoint-readiness.json
+```
+
+The benchmark requires a FastContext-compatible endpoint and `tiktoken`.
 The FanPlan task uses anonymized paths in the committed task file; replace
 `/path/to/FanPlan_Android` with a local fixture path before re-running it.
 

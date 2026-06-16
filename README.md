@@ -185,6 +185,8 @@ Local before/after FastContext impact data:
   successful ground-truth hits. The local endpoint exposed
   `fastcontext-tools-64k:latest`, not the official
   `microsoft/FastContext-1.0-4B-SFT` SGLang 262K setup.
+- Endpoint readiness check: local `/v1/models` is not official-ready because it
+  does not expose `microsoft/FastContext-1.0-4B-SFT`.
 - These local smoke tests do not match Microsoft's benchmark harness and do not
   reproduce the official gains yet.
 
@@ -207,9 +209,11 @@ Artifacts:
 - MICE before/after token smoke test: [evaluation/mice-checkin-before-after.json](evaluation/mice-checkin-before-after.json)
 - FanPlan before/after token smoke test: [evaluation/fanplan-fcm-before-after.json](evaluation/fanplan-fcm-before-after.json)
 - Latest aggregate before/after run: [evaluation/local-before-after-results.json](evaluation/local-before-after-results.json)
+- Local endpoint readiness: [evaluation/local-endpoint-readiness.json](evaluation/local-endpoint-readiness.json)
 - MICE query-variant matrix: [evaluation/local-query-matrix-results.json](evaluation/local-query-matrix-results.json)
 - Matrix task spec: [evaluation/token-benchmark-matrix-tasks.json](evaluation/token-benchmark-matrix-tasks.json)
 - Repeatable benchmark harness: [evaluation/token_benchmark.py](evaluation/token_benchmark.py)
+- Endpoint readiness checker: [evaluation/endpoint_readiness.py](evaluation/endpoint_readiness.py)
 - Full report: [docs/REPORT.md](docs/REPORT.md)
 
 The local evaluation uses a fake `fastcontext.cli` package so it can validate
