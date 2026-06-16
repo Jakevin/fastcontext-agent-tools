@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T00:15:59+00:00",
+  "generated_at": "2026-06-16T00:25:39+00:00",
   "project": "fastcontext-agent-tools",
   "scope": "MCP wrapper and bundled Codex skill",
   "environment": {
@@ -16,14 +16,14 @@
       "name": "unit_tests",
       "status": "pass",
       "returncode": 0,
-      "duration_seconds": 0.353,
+      "duration_seconds": 0.271,
       "stdout": "",
-      "stderr": ".............\n----------------------------------------------------------------------\nRan 13 tests in 0.004s\n\nOK"
+      "stderr": ".............\n----------------------------------------------------------------------\nRan 13 tests in 0.005s\n\nOK"
     },
     {
       "name": "mcp_stdio_smoke",
       "status": "pass",
-      "duration_seconds": 0.115,
+      "duration_seconds": 0.093,
       "tools": [
         "fastcontext_explore",
         "fastcontext_explore_with_trace",

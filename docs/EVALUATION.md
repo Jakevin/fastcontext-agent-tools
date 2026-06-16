@@ -7,11 +7,10 @@ This project has two evaluation layers:
 
 ![Evaluation summary](assets/evaluation-summary.svg)
 
-The summary image is intentionally split into:
+The summary image is intentionally split by data source:
 
-- Before/after workflow impact from the upstream Microsoft FastContext
-  benchmark claims.
-- Local wrapper validation for this MCP package.
+- Official Microsoft FastContext benchmark data.
+- Local wrapper measurements from this repository.
 
 ## Local Wrapper Evaluation
 

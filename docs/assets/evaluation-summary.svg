@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520" role="img" aria-labelledby="title desc">
-  <title id="title">FastContext before and after evaluation summary</title>
-  <desc id="desc">A before and after comparison showing direct main-agent repository exploration versus delegated FastContext exploration, plus local wrapper checks.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">FastContext evaluation data split by source</title>
+  <desc id="desc">A workflow comparison plus separate official Microsoft benchmark data and this repository's measured wrapper data.</desc>
   <style>
     .title { font: 700 28px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #17202a; }
     .subtitle { font: 400 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #52616b; }
@@ -13,43 +13,39 @@
     .fine { font: 400 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #52616b; }
     .note { font: 400 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #52616b; }
   </style>
-  <rect width="960" height="520" fill="#f8faf9"/>
-  <rect x="24" y="24" width="912" height="472" rx="12" fill="#ffffff" stroke="#d6dde2"/>
+  <rect width="960" height="540" fill="#f8faf9"/>
+  <rect x="24" y="24" width="912" height="492" rx="12" fill="#ffffff" stroke="#d6dde2"/>
 
-  <text x="48" y="68" class="title">FastContext Effect: Before vs After</text>
-  <text x="48" y="94" class="subtitle">Generated 2026-06-16 00:15:59 UTC - local wrapper checks plus Microsoft-reported impact evidence.</text>
+  <text x="48" y="68" class="title">FastContext Evaluation: Official vs Local</text>
+  <text x="48" y="94" class="subtitle">Generated 2026-06-16 00:25:39 UTC - benchmark claims and wrapper measurements are listed separately.</text>
 
-  <rect x="48" y="128" width="386" height="190" rx="10" fill="#fff7ed" stroke="#fed7aa"/>
-  <text x="72" y="166" class="card-title">Without FastContext</text>
-  <text x="72" y="200" class="body">Main coding agent explores the repo directly.</text>
-  <text x="72" y="228" class="body">- Broad reads and searches stay in solver history</text>
-  <text x="72" y="254" class="body">- More irrelevant snippets enter the context window</text>
-  <text x="72" y="280" class="body">- Solver spends tokens before it can edit or answer</text>
+  <rect x="48" y="122" width="864" height="98" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="72" y="154" class="card-title">Workflow change</text>
+  <text x="72" y="184" class="body">Before: direct repo exploration</text>
+  <text x="72" y="204" class="fine">Broad reads stay in solver history.</text>
+  <text x="520" y="184" class="body">After: delegated FastContext exploration</text>
+  <text x="520" y="204" class="fine">File-line citations go back to the solver.</text>
+  <rect x="452" y="166" width="44" height="28" rx="14" fill="#334e68"/>
+  <text x="464" y="185" class="pill">to</text>
 
-  <rect x="456" y="190" width="48" height="34" rx="17" fill="#334e68"/>
-  <text x="471" y="212" class="pill">vs</text>
+  <rect x="48" y="250" width="410" height="220" rx="10" fill="#ecfdf5" stroke="#a7f3d0"/>
+  <text x="72" y="288" class="card-title">Official Microsoft benchmark data</text>
+  <text x="72" y="316" class="fine">Source: Microsoft FastContext repo, model card, and paper.</text>
 
-  <rect x="526" y="128" width="386" height="190" rx="10" fill="#eff6ff" stroke="#bfdbfe"/>
-  <text x="550" y="166" class="card-title">With FastContext MCP</text>
-  <text x="550" y="200" class="body">Delegated read-only repository exploration.</text>
-  <text x="550" y="228" class="body">- FastContext uses READ / GLOB / GREP tools</text>
-  <text x="550" y="254" class="body">- Returns compact file-line citations</text>
-  <text x="550" y="280" class="body">- Main agent verifies focused evidence</text>
+  <text x="72" y="358" class="metric">+5.5</text>
+  <text x="152" y="358" class="metric-label">up to end-to-end score improvement</text>
+  <text x="72" y="408" class="metric">60.3%</text>
+  <text x="174" y="408" class="metric-label">up to fewer main-agent tokens</text>
+  <text x="72" y="444" class="fine">Across Microsoft's reported Mini-SWE-Agent benchmark settings.</text>
 
-  <rect x="48" y="346" width="260" height="98" rx="10" fill="#ecfdf5" stroke="#a7f3d0"/>
-  <text x="72" y="384" class="metric">+5.5</text>
-  <text x="72" y="414" class="metric-label">up to end-to-end score improvement</text>
-  <text x="72" y="436" class="fine">Reported by Microsoft FastContext</text>
+  <rect x="502" y="250" width="410" height="220" rx="10" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="526" y="288" class="card-title">Our measured wrapper data</text>
+  <text x="526" y="316" class="fine">Source: committed local wrapper evaluation in this repository.</text>
 
-  <rect x="328" y="346" width="260" height="98" rx="10" fill="#ecfeff" stroke="#a5f3fc"/>
-  <text x="352" y="384" class="metric">60.3%</text>
-  <text x="352" y="414" class="metric-label">up to fewer main-agent tokens</text>
-  <text x="352" y="436" class="fine">Across reported benchmark settings</text>
+  <text x="526" y="358" class="metric">2/2 checks pass</text>
+  <text x="526" y="388" class="fine">- Unit Tests: PASS</text>
+  <text x="526" y="410" class="fine">- MCP Stdio Smoke: PASS</text>
+  <text x="526" y="432" class="fine">- 2 citations parsed, trace written, path guard checked</text>
 
-  <rect x="608" y="346" width="304" height="98" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
-  <text x="636" y="376" class="label">Wrapper checks:</text>
-  <text x="636" y="396" class="fine">- 2/2 checks pass</text>
-  <text x="636" y="418" class="fine">- Unit Tests: PASS</text><text x="636" y="440" class="fine">- Mcp Stdio Smoke: PASS</text>
-
-  <text x="48" y="474" class="note">Local evaluation validates wrapper behavior. Model-quality claims remain attributed to Microsoft FastContext.</text>
+  <text x="48" y="498" class="note">Local data validates MCP integration only; this repo does not re-run the upstream model-quality benchmarks.</text>
 </svg>
