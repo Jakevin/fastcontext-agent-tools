@@ -24,8 +24,13 @@ Last checked result committed in `evaluation/wrapper-eval.json`:
 
 | Check | Result | Evidence |
 | --- | --- | --- |
-| Unit tests | PASS | 13 tests covering citation parsing, tool listing, bundled module execution, health response, and path allowlist behavior |
-| MCP stdio smoke | PASS | Starts the server, sends JSON-RPC framed requests, verifies three tools, parses two citations, writes a trajectory, and rejects a repo outside the allowlist |
+| Unit tests | PASS | Runs 13 tests covering parser, runtime, server, and wrapper behavior |
+| MCP initialize | PASS | Starts the stdio server and completes JSON-RPC `initialize` |
+| MCP tool discovery | PASS | Verifies `tools/list` exposes `fastcontext_health`, `fastcontext_explore`, and `fastcontext_explore_with_trace` |
+| Health uses bundled CLI | PASS | Verifies `fastcontext_health` reports `fastcontext_mcp.fastcontext_cli` as the command module |
+| Citation parsing | PASS | Runs `fastcontext_explore` through a fake FastContext CLI and parses two file-line citations |
+| Trace output | PASS | Runs `fastcontext_explore_with_trace` and verifies the trajectory file is written inside the repo |
+| Path allowlist guard | PASS | Calls a repo outside `FASTCONTEXT_ALLOWED_ROOTS` and verifies it is rejected |
 
 Scope:
 

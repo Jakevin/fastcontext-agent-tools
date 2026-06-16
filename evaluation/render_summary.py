@@ -11,9 +11,12 @@ def render_svg(summary: dict[str, Any]) -> str:
     wrapper_status = f"{passed}/{len(checks)} checks pass"
     if failed:
         wrapper_status = f"{passed}/{len(checks)} checks pass, {failed} fail"
+    check_by_name = {check["name"]: check for check in checks}
+    citations = check_by_name.get("citation_parsing", {}).get("citations", [])
+    tools = check_by_name.get("mcp_tool_discovery", {}).get("tools", [])
 
     generated = summary["generated_at"].replace("T", " ").replace("+00:00", " UTC")
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640" role="img" aria-labelledby="title desc">
   <title id="title">FastContext evaluation data split by source</title>
   <desc id="desc">A workflow comparison plus separate official Microsoft benchmark data and this repository's measured wrapper data.</desc>
   <style>
@@ -28,8 +31,8 @@ def render_svg(summary: dict[str, Any]) -> str:
     .fine {{ font: 400 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #52616b; }}
     .note {{ font: 400 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #52616b; }}
   </style>
-  <rect width="960" height="540" fill="#f8faf9"/>
-  <rect x="24" y="24" width="912" height="492" rx="12" fill="#ffffff" stroke="#d6dde2"/>
+  <rect width="960" height="640" fill="#f8faf9"/>
+  <rect x="24" y="24" width="912" height="592" rx="12" fill="#ffffff" stroke="#d6dde2"/>
 
   <text x="48" y="68" class="title">FastContext Evaluation: Official vs Local</text>
   <text x="48" y="94" class="subtitle">Generated {generated} - benchmark claims and wrapper measurements are listed separately.</text>
@@ -43,7 +46,7 @@ def render_svg(summary: dict[str, Any]) -> str:
   <rect x="452" y="166" width="44" height="28" rx="14" fill="#334e68"/>
   <text x="464" y="185" class="pill">to</text>
 
-  <rect x="48" y="250" width="410" height="220" rx="10" fill="#ecfdf5" stroke="#a7f3d0"/>
+  <rect x="48" y="250" width="410" height="300" rx="10" fill="#ecfdf5" stroke="#a7f3d0"/>
   <text x="72" y="288" class="card-title">Official Microsoft benchmark data</text>
   <text x="72" y="316" class="fine">Source: Microsoft FastContext repo, model card, and paper.</text>
 
@@ -51,17 +54,23 @@ def render_svg(summary: dict[str, Any]) -> str:
   <text x="152" y="358" class="metric-label">up to end-to-end score improvement</text>
   <text x="72" y="408" class="metric">60.3%</text>
   <text x="174" y="408" class="metric-label">up to fewer main-agent tokens</text>
-  <text x="72" y="444" class="fine">Across Microsoft's reported Mini-SWE-Agent benchmark settings.</text>
+  <text x="72" y="448" class="fine">Meaning: model-quality / end-to-end benchmark result.</text>
+  <text x="72" y="474" class="fine">Not re-run by this repository.</text>
+  <text x="72" y="500" class="fine">Use for upstream FastContext impact claims only.</text>
 
-  <rect x="502" y="250" width="410" height="220" rx="10" fill="#eff6ff" stroke="#bfdbfe"/>
+  <rect x="502" y="250" width="410" height="300" rx="10" fill="#eff6ff" stroke="#bfdbfe"/>
   <text x="526" y="288" class="card-title">Our measured wrapper data</text>
   <text x="526" y="316" class="fine">Source: committed local wrapper evaluation in this repository.</text>
 
   <text x="526" y="358" class="metric">{escape(wrapper_status)}</text>
-  <text x="526" y="388" class="fine">- Unit Tests: PASS</text>
-  <text x="526" y="410" class="fine">- MCP Stdio Smoke: PASS</text>
-  <text x="526" y="432" class="fine">- 2 citations parsed, trace written, path guard checked</text>
+  <text x="526" y="388" class="fine">- Unit tests: parser, runtime, server, wrapper</text>
+  <text x="526" y="410" class="fine">- MCP initialize handshake completed</text>
+  <text x="526" y="432" class="fine">- Tool discovery exposed {len(tools)} FastContext tools</text>
+  <text x="526" y="454" class="fine">- Health reports bundled CLI wrapper command</text>
+  <text x="526" y="476" class="fine">- Exploration parsed {len(citations)} file-line citations</text>
+  <text x="526" y="498" class="fine">- Trace call wrote trajectory inside repo</text>
+  <text x="526" y="520" class="fine">- Path guard rejected outside allowlist</text>
 
-  <text x="48" y="498" class="note">Local data validates MCP integration only; this repo does not re-run the upstream model-quality benchmarks.</text>
+  <text x="48" y="594" class="note">Local data validates MCP integration only; this repo does not re-run the upstream model-quality benchmarks.</text>
 </svg>
 """

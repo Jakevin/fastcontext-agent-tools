@@ -65,11 +65,11 @@ Local wrapper evaluation was run on 2026-06-16 and committed as `evaluation/wrap
 
 Results:
 
-- 2 total checks.
-- 2 passed.
+- 7 total checks.
+- 7 passed.
 - 0 failed.
 
-The evaluation starts the MCP server over stdio, sends JSON-RPC framed requests, verifies the tool list, checks health behavior, runs an exploration call through a fake `fastcontext.cli` package, parses two citations, writes a trajectory, and verifies that repositories outside the allowlist are rejected.
+The evaluation starts the MCP server over stdio, sends JSON-RPC framed requests, and records separate measured checks for initialization, tool discovery, health behavior, citation parsing, trace output, and path allowlist rejection. The exploration calls use a fake `fastcontext.cli` package, so the result proves wrapper behavior without requiring a GPU or model endpoint.
 
 This is not a FastContext model benchmark. Model-quality claims are sourced from Microsoft FastContext because this environment does not provide a GPU endpoint or the full SWE-bench benchmark setup.
 

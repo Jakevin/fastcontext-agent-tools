@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T00:25:39+00:00",
+  "generated_at": "2026-06-16T00:32:12+00:00",
   "project": "fastcontext-agent-tools",
   "scope": "MCP wrapper and bundled Codex skill",
   "environment": {
@@ -7,31 +7,80 @@
     "platform": "macOS-26.3.1-arm64-arm-64bit"
   },
   "summary": {
-    "checks_total": 2,
-    "checks_passed": 2,
+    "checks_total": 7,
+    "checks_passed": 7,
     "checks_failed": 0
   },
   "checks": [
     {
       "name": "unit_tests",
+      "evidence": "Runs the repository unit-test suite for parser, runtime, server, and wrapper behavior.",
       "status": "pass",
       "returncode": 0,
-      "duration_seconds": 0.271,
+      "duration_seconds": 0.27,
       "stdout": "",
-      "stderr": ".............\n----------------------------------------------------------------------\nRan 13 tests in 0.005s\n\nOK"
+      "stderr": ".............\n----------------------------------------------------------------------\nRan 13 tests in 0.004s\n\nOK"
     },
     {
-      "name": "mcp_stdio_smoke",
+      "name": "mcp_initialize",
       "status": "pass",
-      "duration_seconds": 0.093,
+      "evidence": "JSON-RPC initialize returned a result.",
+      "duration_seconds": 0.087
+    },
+    {
+      "name": "mcp_tool_discovery",
+      "status": "pass",
+      "evidence": "tools/list exposed the three FastContext MCP tools.",
       "tools": [
         "fastcontext_explore",
         "fastcontext_explore_with_trace",
         "fastcontext_health"
-      ],
-      "citations_returned": 2,
-      "trace_created": true,
-      "path_guard_rejected_outside_repo": true
+      ]
+    },
+    {
+      "name": "health_uses_bundled_cli",
+      "status": "pass",
+      "evidence": "fastcontext_health points at the bundled wrapper module.",
+      "command": [
+        "/Users/jakevinlo/project/mcp/factcontext-mcp/github-repo-https-github-com-jakevin/work/fastcontext-agent-tools/.venv/bin/python3",
+        "-m",
+        "fastcontext_mcp.fastcontext_cli"
+      ]
+    },
+    {
+      "name": "citation_parsing",
+      "status": "pass",
+      "evidence": "fastcontext_explore parsed two FastContext-style file-line citations.",
+      "citations": [
+        {
+          "end_line": 2,
+          "path": "/private/var/folders/6m/l5c418y55nv6q5vpm0lyddvm0000gn/T/tmpa393f020/sample-repo/src/app.py",
+          "start_line": 1
+        },
+        {
+          "end_line": 2,
+          "path": "/private/var/folders/6m/l5c418y55nv6q5vpm0lyddvm0000gn/T/tmpa393f020/sample-repo/tests/test_app.py",
+          "start_line": 1
+        }
+      ]
+    },
+    {
+      "name": "trace_output",
+      "status": "pass",
+      "evidence": "fastcontext_explore_with_trace wrote a trajectory under the repo.",
+      "trajectory_path": "/private/var/folders/6m/l5c418y55nv6q5vpm0lyddvm0000gn/T/tmpa393f020/sample-repo/.fastcontext/eval.jsonl"
+    },
+    {
+      "name": "path_allowlist_guard",
+      "status": "pass",
+      "evidence": "A repo outside FASTCONTEXT_ALLOWED_ROOTS was rejected.",
+      "error": {
+        "code": -32602,
+        "message": "repo_path is outside FASTCONTEXT_ALLOWED_ROOTS: /private/var/folders/6m/l5c418y55nv6q5vpm0lyddvm0000gn/T/tmpwg9dscay",
+        "data": {
+          "allowed_roots": "/private/var/folders/6m/l5c418y55nv6q5vpm0lyddvm0000gn/T/tmpa393f020"
+        }
+      }
     }
   ],
   "limitations": [

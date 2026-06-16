@@ -166,9 +166,10 @@ Official Microsoft FastContext data:
 
 Our measured wrapper data:
 
-- 2 local wrapper checks passed.
-- The MCP wrapper starts, exposes tools, parses FastContext-style citations,
-  writes traces, and enforces the repo allowlist.
+- 7 local wrapper checks passed.
+- Unit tests cover parser, runtime, server, and wrapper behavior.
+- MCP stdio checks verify initialize, tool discovery, health response,
+  citation parsing, trace output, and path allowlist rejection.
 
 Wrapper evaluation is repeatable:
 
@@ -178,8 +179,8 @@ python -m evaluation.run_wrapper_eval
 
 Current committed result:
 
-- 2 checks total.
-- 2 checks passed.
+- 7 checks total.
+- 7 checks passed.
 - 0 checks failed.
 
 Artifacts:

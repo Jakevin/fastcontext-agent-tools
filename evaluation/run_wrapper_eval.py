@@ -5,12 +5,12 @@ import os
 import platform
 import subprocess
 import sys
-import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from .mcp_smoke import run_mcp_smoke
 from .render_summary import render_svg
 
 
@@ -39,219 +39,19 @@ def run_command(command: list[str], env: dict[str, str] | None = None) -> dict[s
     }
 
 
-def write_fake_fastcontext(package_root: Path) -> None:
-    package_dir = package_root / "fastcontext"
-    package_dir.mkdir(parents=True)
-    (package_dir / "__init__.py").write_text("", encoding="utf-8")
-    fake_cli = package_dir / "cli.py"
-    fake_cli.write_text(
-        """import argparse
-import json
-from pathlib import Path
-
-parser = argparse.ArgumentParser()
-parser.add_argument("--query", required=True)
-parser.add_argument("--max-turns", default="6")
-parser.add_argument("--citation", action="store_true")
-parser.add_argument("--traj")
-args = parser.parse_args()
-
-if args.traj:
-    traj = Path(args.traj)
-    traj.parent.mkdir(parents=True, exist_ok=True)
-    traj.write_text(json.dumps({
-        "query": args.query,
-        "max_turns": int(args.max_turns),
-        "event": "fake-fastcontext-eval"
-    }) + "\\n")
-
-print("<final_answer>")
-print("src/app.py:1-2")
-print("tests/test_app.py:1-2")
-print("</final_answer>")
-""",
-        encoding="utf-8",
-    )
-
-
-def send_message(process: subprocess.Popen[bytes], message: dict[str, Any]) -> None:
-    body = json.dumps(message, separators=(",", ":")).encode("utf-8")
-    frame = f"Content-Length: {len(body)}\r\n\r\n".encode("ascii") + body
-    assert process.stdin is not None
-    process.stdin.write(frame)
-    process.stdin.flush()
-
-
-def read_message(process: subprocess.Popen[bytes]) -> dict[str, Any]:
-    assert process.stdout is not None
-    headers: dict[str, str] = {}
-    while True:
-        line = process.stdout.readline()
-        if line == b"":
-            raise EOFError("MCP server closed stdout while waiting for a response")
-        if line in {b"\r\n", b"\n"}:
-            break
-        name, _, value = line.decode("ascii").partition(":")
-        headers[name.lower()] = value.strip()
-    length = int(headers["content-length"])
-    return json.loads(process.stdout.read(length).decode("utf-8"))
-
-
-def call_mcp(process: subprocess.Popen[bytes], method: str, params: dict[str, Any] | None = None, request_id: int = 1) -> dict[str, Any]:
-    message: dict[str, Any] = {"jsonrpc": "2.0", "id": request_id, "method": method}
-    if params is not None:
-        message["params"] = params
-    send_message(process, message)
-    return read_message(process)
-
-
-def run_mcp_smoke() -> dict[str, Any]:
-    started = time.perf_counter()
-    with tempfile.TemporaryDirectory() as temp_root_text:
-        temp_root = Path(temp_root_text)
-        repo = temp_root / "sample-repo"
-        (repo / "src").mkdir(parents=True)
-        (repo / "tests").mkdir()
-        (repo / "src" / "app.py").write_text("def handler():\n    return 'ok'\n", encoding="utf-8")
-        (repo / "tests" / "test_app.py").write_text("def test_handler():\n    assert True\n", encoding="utf-8")
-
-        fake_site = temp_root / "fake-site"
-        write_fake_fastcontext(fake_site)
-
-        env = os.environ.copy()
-        env.update(
-            {
-                "PYTHONPATH": os.pathsep.join([str(fake_site), str(ROOT / "src")]),
-                "BASE_URL": "http://127.0.0.1:30000/v1",
-                "MODEL": "microsoft/FastContext-1.0-4B-SFT",
-                "API_KEY": "eval-key",
-                "FASTCONTEXT_ALLOWED_ROOTS": str(temp_root),
-            }
-        )
-
-        process = subprocess.Popen(
-            [sys.executable, "-m", "fastcontext_mcp"],
-            cwd=ROOT,
-            env=env,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-        try:
-            initialize = call_mcp(process, "initialize", {"clientInfo": {"name": "wrapper-eval"}}, 1)
-            tools_list = call_mcp(process, "tools/list", request_id=2)
-            health = call_mcp(
-                process,
-                "tools/call",
-                {"name": "fastcontext_health", "arguments": {}},
-                3,
-            )
-            explore = call_mcp(
-                process,
-                "tools/call",
-                {
-                    "name": "fastcontext_explore",
-                    "arguments": {
-                        "repo_path": str(repo),
-                        "query": "Locate handler and its tests",
-                        "max_turns": 4,
-                        "citation": True,
-                    },
-                },
-                4,
-            )
-            trace = call_mcp(
-                process,
-                "tools/call",
-                {
-                    "name": "fastcontext_explore_with_trace",
-                    "arguments": {
-                        "repo_path": str(repo),
-                        "query": "Locate handler and write trajectory",
-                        "max_turns": 4,
-                        "trajectory_path": ".fastcontext/eval.jsonl",
-                    },
-                },
-                5,
-            )
-
-            with tempfile.TemporaryDirectory() as outside:
-                rejected = call_mcp(
-                    process,
-                    "tools/call",
-                    {
-                        "name": "fastcontext_explore",
-                        "arguments": {
-                            "repo_path": outside,
-                            "query": "This should be rejected",
-                        },
-                    },
-                    6,
-                )
-
-            assert "result" in initialize
-            tool_names = {tool["name"] for tool in tools_list["result"]["tools"]}
-            assert {"fastcontext_health", "fastcontext_explore", "fastcontext_explore_with_trace"} <= tool_names
-
-            health_payload = json.loads(health["result"]["content"][0]["text"])
-            assert health_payload["ok"] is True
-            assert health_payload["fastcontext_module"] == "fastcontext_mcp.fastcontext_cli"
-            assert health_payload["fastcontext_command"] == [
-                sys.executable,
-                "-m",
-                "fastcontext_mcp.fastcontext_cli",
-            ]
-            explore_payload = json.loads(explore["result"]["content"][0]["text"])
-            assert explore_payload["ok"] is True
-            assert len(explore_payload["citations"]) == 2
-
-            trace_payload = json.loads(trace["result"]["content"][0]["text"])
-            assert trace_payload["ok"] is True
-            assert Path(trace_payload["trajectory_path"]).exists()
-
-            assert rejected["error"]["code"] == -32602
-
-            return {
-                "status": "pass",
-                "duration_seconds": round(time.perf_counter() - started, 3),
-                "tools": sorted(tool_names),
-                "citations_returned": len(explore_payload["citations"]),
-                "trace_created": True,
-                "path_guard_rejected_outside_repo": True,
-            }
-        except (
-            AssertionError,
-            EOFError,
-            json.JSONDecodeError,
-            KeyError,
-            OSError,
-            TypeError,
-            ValueError,
-        ) as exc:
-            return {
-                "status": "fail",
-                "duration_seconds": round(time.perf_counter() - started, 3),
-                "error": str(exc),
-            }
-        finally:
-            if process.stdin is not None:
-                process.stdin.close()
-            try:
-                process.wait(timeout=5)
-            except subprocess.TimeoutExpired:
-                process.kill()
-                process.wait(timeout=5)
-
-
 def main() -> int:
     env = os.environ.copy()
     env["PYTHONPATH"] = str(ROOT / "src")
     unit = run_command([sys.executable, "-m", "unittest", "discover", "-s", "tests"], env=env)
-    mcp = run_mcp_smoke()
+    mcp_checks = run_mcp_smoke()
 
     checks = [
-        {"name": "unit_tests", **unit},
-        {"name": "mcp_stdio_smoke", **mcp},
+        {
+            "name": "unit_tests",
+            "evidence": "Runs the repository unit-test suite for parser, runtime, server, and wrapper behavior.",
+            **unit,
+        },
+        *mcp_checks,
     ]
     passed = sum(1 for check in checks if check["status"] == "pass")
     summary = {
