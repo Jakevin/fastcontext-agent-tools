@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T03:09:20+00:00",
+  "generated_at": "2026-06-16T03:16:10+00:00",
   "project": "fastcontext-agent-tools",
   "scope": "MCP wrapper and bundled Codex skill",
   "environment": {
@@ -17,15 +17,15 @@
       "evidence": "Runs the repository unit-test suite for parser, runtime, server, and wrapper behavior.",
       "status": "pass",
       "returncode": 0,
-      "duration_seconds": 0.354,
+      "duration_seconds": 0.402,
       "stdout": "",
-      "stderr": "....................\n----------------------------------------------------------------------\nRan 20 tests in 0.008s\n\nOK"
+      "stderr": ".....................\n----------------------------------------------------------------------\nRan 21 tests in 0.007s\n\nOK"
     },
     {
       "name": "mcp_initialize",
       "status": "pass",
       "evidence": "JSON-RPC initialize returned a result.",
-      "duration_seconds": 0.115
+      "duration_seconds": 0.101
     },
     {
       "name": "mcp_tool_discovery",
@@ -54,12 +54,12 @@
       "citations": [
         {
           "end_line": 2,
-          "path": "/private/var/folders/6m/l5c418y55nv6q5vpm0lyddvm0000gn/T/tmp2ug3aefi/sample-repo/src/app.py",
+          "path": "/private/var/folders/6m/l5c418y55nv6q5vpm0lyddvm0000gn/T/tmp1aeq2964/sample-repo/src/app.py",
           "start_line": 1
         },
         {
           "end_line": 2,
-          "path": "/private/var/folders/6m/l5c418y55nv6q5vpm0lyddvm0000gn/T/tmp2ug3aefi/sample-repo/tests/test_app.py",
+          "path": "/private/var/folders/6m/l5c418y55nv6q5vpm0lyddvm0000gn/T/tmp1aeq2964/sample-repo/tests/test_app.py",
           "start_line": 1
         }
       ]
@@ -68,7 +68,7 @@
       "name": "trace_output",
       "status": "pass",
       "evidence": "fastcontext_explore_with_trace wrote a trajectory under the repo.",
-      "trajectory_path": "/private/var/folders/6m/l5c418y55nv6q5vpm0lyddvm0000gn/T/tmp2ug3aefi/sample-repo/.fastcontext/eval.jsonl"
+      "trajectory_path": "/private/var/folders/6m/l5c418y55nv6q5vpm0lyddvm0000gn/T/tmp1aeq2964/sample-repo/.fastcontext/eval.jsonl"
     },
     {
       "name": "path_allowlist_guard",
@@ -76,9 +76,9 @@
       "evidence": "A repo outside FASTCONTEXT_ALLOWED_ROOTS was rejected.",
       "error": {
         "code": -32602,
-        "message": "repo_path is outside FASTCONTEXT_ALLOWED_ROOTS: /private/var/folders/6m/l5c418y55nv6q5vpm0lyddvm0000gn/T/tmp0h6ybjvu",
+        "message": "repo_path is outside FASTCONTEXT_ALLOWED_ROOTS: /private/var/folders/6m/l5c418y55nv6q5vpm0lyddvm0000gn/T/tmpch_8pv2v",
         "data": {
-          "allowed_roots": "/private/var/folders/6m/l5c418y55nv6q5vpm0lyddvm0000gn/T/tmp2ug3aefi"
+          "allowed_roots": "/private/var/folders/6m/l5c418y55nv6q5vpm0lyddvm0000gn/T/tmp1aeq2964"
         }
       }
     }

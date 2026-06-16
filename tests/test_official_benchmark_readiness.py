@@ -55,12 +55,13 @@ class OfficialBenchmarkReadinessTests(unittest.TestCase):
                 upstream_root=upstream,
                 config_path=config,
                 serving_preflight=serving,
-                tools=ToolAvailability(uv=True, docker=True),
+                tools=ToolAvailability(uv=True, docker=True, docker_daemon=True),
             )
 
         self.assertTrue(result.ready)
         self.assertEqual(result.blockers, [])
         self.assertEqual(result.missing_upstream_files, [])
+        self.assertIsNone(result.upstream_commit)
 
     def test_local_missing_official_inputs_reports_actionable_blockers(self) -> None:
         serving: dict[str, JsonValue] = {"ready": False}
@@ -69,7 +70,7 @@ class OfficialBenchmarkReadinessTests(unittest.TestCase):
             upstream_root=None,
             config_path=None,
             serving_preflight=serving,
-            tools=ToolAvailability(uv=True, docker=False),
+            tools=ToolAvailability(uv=True, docker=False, docker_daemon=False),
         )
 
         self.assertFalse(result.ready)
@@ -81,6 +82,18 @@ class OfficialBenchmarkReadinessTests(unittest.TestCase):
             "benchmark/evaluation/bench_mini_swe_agent.py",
             result.missing_upstream_files,
         )
+
+    def test_docker_binary_without_daemon_reports_blocker(self) -> None:
+        serving: dict[str, JsonValue] = {"ready": True}
+
+        result = evaluate_benchmark_readiness(
+            upstream_root=None,
+            config_path=None,
+            serving_preflight=serving,
+            tools=ToolAvailability(uv=True, docker=True, docker_daemon=False),
+        )
+
+        self.assertIn("Docker daemon is not reachable", result.blockers)
 
 
 if __name__ == "__main__":

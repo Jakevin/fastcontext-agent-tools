@@ -81,7 +81,7 @@ The newer MICE query-variant matrix adds three query styles with two repeats eac
 
 `evaluation/local-official-serving-preflight.json` extends that check to the local runtime. It is also `ready=false`: the project environment has no SGLang install and no CUDA/NVIDIA runtime, so it should not be compared directly with the official SGLang 262K serving setup.
 
-`evaluation/local-official-benchmark-readiness.json` checks the official benchmark surfaces directly. It is `ready=false` because this workspace has not been pointed at an upstream `microsoft/fastcontext` checkout, has no benchmark `.env`, has no usable main-agent credential, and the official serving preflight is still false.
+`evaluation/local-official-benchmark-readiness.json` checks the official benchmark surfaces directly. It is `ready=false`, but the upstream checkout is now present at `936c0052f19b0936be51a24f8a76cfe2c47580e6`, the wheel builds, Docker is reachable, and the official benchmark CLIs load. The remaining blockers are placeholder benchmark credentials, no usable main-agent credential, and the official serving preflight still being false.
 
 Model-quality and broader task-impact claims remain sourced from Microsoft FastContext because this repository has not re-run the full benchmark setup.
 

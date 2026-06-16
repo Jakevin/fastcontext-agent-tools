@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import shutil
+import subprocess
 from collections.abc import Mapping
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -52,6 +53,7 @@ OFFICIAL_COMMANDS: Final = [
 class ToolAvailability:
     uv: bool
     docker: bool
+    docker_daemon: bool
 
 
 @dataclass(frozen=True, slots=True)
@@ -68,6 +70,7 @@ class EnvConfigCheck:
 class OfficialBenchmarkReadiness:
     ready: bool
     upstream_root: str | None
+    upstream_commit: str | None
     required_upstream_files: list[str]
     missing_upstream_files: list[str]
     tools: ToolAvailability
@@ -98,6 +101,7 @@ def evaluate_benchmark_readiness(
     return OfficialBenchmarkReadiness(
         ready=not blockers,
         upstream_root=str(upstream_root.resolve()) if upstream_root else None,
+        upstream_commit=read_upstream_commit(upstream_root),
         required_upstream_files=list(REQUIRED_UPSTREAM_FILES),
         missing_upstream_files=missing_files,
         tools=tools,
@@ -113,6 +117,24 @@ def missing_required_files(upstream_root: Path | None) -> list[str]:
     if upstream_root is None:
         return list(REQUIRED_UPSTREAM_FILES)
     return [item for item in REQUIRED_UPSTREAM_FILES if not (upstream_root / item).exists()]
+
+
+def read_upstream_commit(upstream_root: Path | None) -> str | None:
+    if upstream_root is None or not (upstream_root / ".git").exists():
+        return None
+    try:
+        completed = subprocess.run(
+            ["git", "-C", str(upstream_root), "rev-parse", "HEAD"],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return None
+    if completed.returncode != 0:
+        return None
+    return completed.stdout.strip() or None
 
 
 def check_env_config(config_path: Path | None) -> EnvConfigCheck:
@@ -169,6 +191,8 @@ def collect_blockers(
         blockers.append("uv is not available on PATH")
     if not tools.docker:
         blockers.append("Docker is not available on PATH")
+    elif not tools.docker_daemon:
+        blockers.append("Docker daemon is not reachable")
     if env_config.config_path is None:
         blockers.append("official benchmark .env config was not provided")
     if env_config.missing_keys:
@@ -189,10 +213,26 @@ def collect_warnings(upstream_root: Path | None) -> list[str]:
 
 
 def collect_tools() -> ToolAvailability:
+    has_docker = shutil.which("docker") is not None
     return ToolAvailability(
         uv=shutil.which("uv") is not None,
-        docker=shutil.which("docker") is not None,
+        docker=has_docker,
+        docker_daemon=has_docker and docker_daemon_available(),
     )
+
+
+def docker_daemon_available() -> bool:
+    try:
+        completed = subprocess.run(
+            ["docker", "info"],
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=15,
+        )
+    except subprocess.TimeoutExpired:
+        return False
+    return completed.returncode == 0
 
 
 def load_json_object(path: Path | None) -> Mapping[str, JsonValue] | None:

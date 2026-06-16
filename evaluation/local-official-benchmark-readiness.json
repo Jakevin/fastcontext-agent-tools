@@ -1,6 +1,7 @@
 {
   "ready": false,
-  "upstream_root": null,
+  "upstream_root": "/Users/jakevinlo/project/mcp/factcontext-mcp/github-repo-https-github-com-jakevin/outputs/microsoft-fastcontext",
+  "upstream_commit": "936c0052f19b0936be51a24f8a76cfe2c47580e6",
   "required_upstream_files": [
     "benchmark/evaluation/bench_mini_swe_agent.py",
     "benchmark/evaluation/configs/example.env",
@@ -12,23 +13,14 @@
     "third_party/mini-swe-agent",
     "dist/fastcontext-0.1.0-py3-none-any.whl"
   ],
-  "missing_upstream_files": [
-    "benchmark/evaluation/bench_mini_swe_agent.py",
-    "benchmark/evaluation/configs/example.env",
-    "benchmark/evaluation/run_score.py",
-    "benchmark/swebench/bench_fastcontext.py",
-    "benchmark/swebench/run.sh.sample",
-    "prompts/gpt-multi-fc.yaml",
-    "prompts/gpt-pro-fc.yaml",
-    "third_party/mini-swe-agent",
-    "dist/fastcontext-0.1.0-py3-none-any.whl"
-  ],
+  "missing_upstream_files": [],
   "tools": {
     "uv": true,
-    "docker": true
+    "docker": true,
+    "docker_daemon": true
   },
   "env_config": {
-    "config_path": null,
+    "config_path": "/Users/jakevinlo/project/mcp/factcontext-mcp/github-repo-https-github-com-jakevin/outputs/microsoft-fastcontext/benchmark/evaluation/configs/example.env",
     "required_keys": [
       "MAIN_MODEL",
       "FASTCONTEXT_MODEL",
@@ -40,13 +32,12 @@
       "OPENAI_API_KEY",
       "ANTHROPIC_API_KEY"
     ],
-    "missing_keys": [
-      "MAIN_MODEL",
-      "FASTCONTEXT_MODEL",
+    "missing_keys": [],
+    "placeholder_keys": [
+      "AZURE_API_KEY",
       "FASTCONTEXT_API_KEY",
       "FASTCONTEXT_BASE_URL"
     ],
-    "placeholder_keys": [],
     "has_main_credential": false
   },
   "official_serving_ready": false,
@@ -56,13 +47,9 @@
     "uv run --group benchmark python benchmark/evaluation/run_score.py swebench-multilingual result_finial_response.jsonl"
   ],
   "blockers": [
-    "official FastContext upstream checkout was not provided",
-    "official benchmark .env config was not provided",
-    "official benchmark .env is missing required FastContext/main model keys",
+    "official benchmark .env still contains placeholder credential values",
     "official benchmark .env has no usable main-agent credential",
     "official serving preflight is not ready"
   ],
-  "warnings": [
-    "Run against a clone of https://github.com/microsoft/fastcontext after uv build."
-  ]
+  "warnings": []
 }

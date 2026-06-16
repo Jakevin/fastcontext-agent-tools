@@ -179,11 +179,15 @@ upstream:
 
 The current result is not ready:
 
-- Official upstream checkout: not provided
-- Official benchmark `.env`: not provided
-- Main-agent credential: not provided
+- Official upstream checkout: present at commit
+  `936c0052f19b0936be51a24f8a76cfe2c47580e6`
+- Required upstream files and built wheel: present
+- Official benchmark `.env`: present, but still uses placeholder credentials
+- Main-agent credential: not usable yet
 - Official serving preflight: `false`
-- Local tools available: `uv=true`, `docker=true`
+- Local tools available: `uv=true`, `docker=true`, `docker_daemon=true`
+- Official benchmark CLIs: `bench_mini_swe_agent.py --help` and
+  `bench_fastcontext.py --help` both load successfully
 
 This check is stricter than the local smoke tests. It records whether this
 machine can run Microsoft's benchmark commands, not whether this MCP wrapper's
