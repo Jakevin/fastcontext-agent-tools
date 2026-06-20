@@ -160,27 +160,23 @@ def handle_request(message: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def read_message(stdin: Any) -> dict[str, Any] | None:
-    headers: dict[str, str] = {}
+    # MCP stdio transport: one JSON-RPC message per line, newline-delimited,
+    # with no embedded newlines. (Not LSP-style Content-Length framing.)
     while True:
         line = stdin.buffer.readline()
         if line == b"":
             return None
-        if line in {b"\r\n", b"\n"}:
-            break
-        name, _, value = line.decode("ascii").partition(":")
-        headers[name.lower()] = value.strip()
-
-    length_text = headers.get("content-length")
-    if length_text is None:
-        raise McpError(-32700, "Missing Content-Length header")
-    body = stdin.buffer.read(int(length_text))
-    return json.loads(body.decode("utf-8"))
+        line = line.strip()
+        if not line:
+            continue
+        return json.loads(line.decode("utf-8"))
 
 
 def write_message(stdout: Any, message: dict[str, Any]) -> None:
+    # Compact JSON keeps the message on a single line (no embedded newlines),
+    # then a trailing newline delimits it per the MCP stdio spec.
     body = json.dumps(message, separators=(",", ":")).encode("utf-8")
-    stdout.buffer.write(f"Content-Length: {len(body)}\r\n\r\n".encode("ascii"))
-    stdout.buffer.write(body)
+    stdout.buffer.write(body + b"\n")
     stdout.buffer.flush()
 
 
