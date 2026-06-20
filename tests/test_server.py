@@ -20,7 +20,17 @@ from fastcontext_mcp.runtime import (
     run_fastcontext,
     validate_citations,
 )
-from fastcontext_mcp.server import handle_request
+from fastcontext_mcp.server import handle_request, read_message, write_message
+
+
+import io
+
+
+class _FakeStream:
+    """Minimal stand-in for sys.stdin/sys.stdout exposing a binary .buffer."""
+
+    def __init__(self, data: bytes = b"") -> None:
+        self.buffer = io.BytesIO(data)
 
 
 class ServerTests(unittest.TestCase):
@@ -98,6 +108,51 @@ class ServerTests(unittest.TestCase):
             with mock.patch.dict(os.environ, {"FASTCONTEXT_ALLOWED_ROOTS": root}):
                 with self.assertRaises(Exception):
                     resolve_repo_path(other)
+
+    def test_read_message_parses_newline_delimited_json(self) -> None:
+        stdin = _FakeStream(b'{"jsonrpc":"2.0","id":1,"method":"tools/list"}\n')
+        message = read_message(stdin)
+        assert message is not None
+        self.assertEqual(message["method"], "tools/list")
+
+    def test_read_message_skips_blank_lines_and_signals_eof(self) -> None:
+        stdin = _FakeStream(b'\n\n{"jsonrpc":"2.0","id":2}\n')
+        first = read_message(stdin)
+        assert first is not None
+        self.assertEqual(first["id"], 2)
+        self.assertIsNone(read_message(_FakeStream(b"")))
+
+    def test_write_message_emits_single_newline_delimited_line(self) -> None:
+        stdout = _FakeStream()
+        write_message(stdout, {"jsonrpc": "2.0", "id": 1, "result": {"ok": True}})
+        out = stdout.buffer.getvalue()
+        # MCP stdio: one message per line, no Content-Length framing, no
+        # embedded newlines.
+        self.assertNotIn(b"Content-Length", out)
+        self.assertTrue(out.endswith(b"\n"))
+        self.assertEqual(out.count(b"\n"), 1)
+        self.assertEqual(json.loads(out.decode("utf-8"))["result"], {"ok": True})
+
+    def test_read_tool_blocks_paths_outside_working_dir(self) -> None:
+        import asyncio
+
+        from fastcontext.agent.tool.read import ReadTool
+
+        original_call = ReadTool.call
+        self.addCleanup(setattr, ReadTool, "call", original_call)
+        fastcontext_cli.configure_read_safety()
+
+        with tempfile.TemporaryDirectory() as root, tempfile.TemporaryDirectory() as outside:
+            inside = Path(root) / "a.py"
+            inside.write_text("hello\n", encoding="utf-8")
+            outside_file = Path(outside) / "secret.py"
+            outside_file.write_text("secret\n", encoding="utf-8")
+
+            def call(path: str) -> str:
+                return asyncio.run(ReadTool().call(json.dumps({"path": path}), cwd=root))
+
+            self.assertFalse(call(str(inside)).startswith("Permission error"))
+            self.assertTrue(call(str(outside_file)).startswith("Permission error"))
 
     def test_tools_list(self) -> None:
         response = handle_request({"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
