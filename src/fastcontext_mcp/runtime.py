@@ -13,6 +13,33 @@ from typing import Any
 FASTCONTEXT_MODULE = "fastcontext_mcp.fastcontext_cli"
 
 
+def truthy(value: str | None) -> bool:
+    return (value or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def reroot_under(value: str, root: Path) -> str:
+    """Map a model-mangled path back under ``root``.
+
+    Small / heavily-quantised models often truncate the workspace path in tool
+    arguments and citations (e.g. ``/mnt/a/b/repo/x`` -> ``/repo/x``). This
+    rewrites such a path to sit under the real workspace root by dropping a
+    leading invented ``/<workspace-basename>`` segment, leaving already-valid
+    in-workspace paths untouched. Gated by callers on FASTCONTEXT_REROOT_PATHS.
+    """
+    if not isinstance(value, str) or not value:
+        return value
+    root = root.resolve()
+    try:
+        if Path(value).resolve().is_relative_to(root):
+            return value
+    except (OSError, ValueError):
+        pass
+    parts = [p for p in value.replace("\\", "/").split("/") if p and p != "."]
+    if parts and parts[0] == root.name:
+        parts = parts[1:]
+    return str(root.joinpath(*parts)) if parts else str(root)
+
+
 class McpError(Exception):
     def __init__(self, code: int, message: str, data: Any | None = None) -> None:
         super().__init__(message)
@@ -64,8 +91,10 @@ def validate_citations(repo: Path, citations: list[Citation]) -> tuple[list[dict
     valid: list[dict[str, int | str]] = []
     warnings: list[str] = []
     repo_root = repo.resolve()
+    reroot = truthy(os.getenv("FASTCONTEXT_REROOT_PATHS"))
     for citation in citations:
-        candidate = Path(citation.path).expanduser()
+        path_str = reroot_under(citation.path, repo_root) if reroot else citation.path
+        candidate = Path(path_str).expanduser()
         if not candidate.is_absolute():
             candidate = repo_root / candidate
         resolved = candidate.resolve()
